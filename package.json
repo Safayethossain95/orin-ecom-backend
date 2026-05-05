@@ -1,0 +1,37 @@
+{
+  "name": "ecom-bkend",
+  "version": "1.0.0",
+  "description": "Node.js/Express ecommerce backend with JWT auth and role-based authorization.",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed/index.js",
+    "check": "find src -name '*.js' -exec node --check {} \\;",
+    "test": "npm run check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.0",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.1",
+    "morgan": "^1.10.1",
+    "slugify": "^1.6.9",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.3.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.3"
+  }
+}
