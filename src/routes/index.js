@@ -8,12 +8,24 @@ const paymentRoutes = require("../api/payments/payment.routes");
 const productRoutes = require("../api/products/product.routes");
 const reviewRoutes = require("../api/reviews/review.routes");
 const userRoutes = require("../api/users/user.routes");
+const orderController = require("../api/orders/order.controller");
+const { createOrderSchema } = require("../api/orders/order.validation");
+const validate = require("../middleware/validate");
+const protect = require("../middleware/auth");
 
 const router = express.Router();
 
 router.get("/health", (_req, res) => {
   res.status(200).json({ success: true, message: "API is healthy." });
 });
+
+// Legacy /create-order endpoint expected by some clients
+router.post(
+  "/create-order",
+  protect,
+  validate(createOrderSchema),
+  orderController.createOrder,
+);
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);

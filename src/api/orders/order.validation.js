@@ -1,22 +1,29 @@
 const { z } = require("zod");
 const { objectId } = require("../../validators/common");
 
-const shippingAddress = z.object({
-  fullName: z.string().min(2),
-  phone: z.string().min(5),
-  line1: z.string().min(3),
-  line2: z.string().optional(),
-  city: z.string().min(2),
-  state: z.string().optional(),
-  postalCode: z.string().min(2),
-  country: z.string().min(2),
-});
-
 const createOrderSchema = z.object({
   body: z.object({
-    shippingAddress,
-    paymentMethod: z.enum(["cod", "card", "bank_transfer"]).optional(),
-    couponCode: z.string().optional(),
+    name: z.string(),
+    address: z.string(),
+    phone: z.string(),
+    items: z.any(),
+    subtotal: z.number(),
+    shipping: z.any(),
+    total: z.number(),
+    createdAt: z.string(),
+  }),
+});
+
+const createDirectOrderSchema = z.object({
+  body: z.object({
+    name: z.string(),
+    address: z.string(),
+    phone: z.string(),
+    items: z.any(),
+    subtotal: z.number(),
+    shipping: z.any(),
+    total: z.number(),
+    createdAt: z.string(),
   }),
 });
 
@@ -37,5 +44,6 @@ const updateOrderStatusSchema = z.object({
 
 module.exports = {
   createOrderSchema,
+  createDirectOrderSchema,
   updateOrderStatusSchema,
 };

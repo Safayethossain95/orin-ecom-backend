@@ -15,7 +15,7 @@ const addressSchema = new mongoose.Schema(
     country: { type: String, trim: true, required: true },
     isDefault: { type: Boolean, default: false },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const userSchema = new mongoose.Schema(
@@ -46,26 +46,28 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     passwordChangedAt: { type: Date, select: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-userSchema.pre("save", async function hashPassword(next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function hashPassword() {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 12);
 
   if (!this.isNew) {
     this.passwordChangedAt = Date.now() - 1000;
   }
-
-  next();
 });
 
-userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
+userSchema.methods.comparePassword = function comparePassword(
+  candidatePassword,
+) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.methods.changedPasswordAfter = function changedPasswordAfter(jwtIssuedAt) {
+userSchema.methods.changedPasswordAfter = function changedPasswordAfter(
+  jwtIssuedAt,
+) {
   if (!this.passwordChangedAt) return false;
 
   const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);

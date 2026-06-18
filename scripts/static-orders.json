@@ -1,0 +1,27 @@
+[
+  {
+    "user": "000000000000000000000000",
+    "items": [
+      {
+        "product": "725724",
+        "externalProductId": "725724",
+        "name": "Umrah Package 4",
+        "sku": "umrah-4",
+        "quantity": 1,
+        "price": 100
+      }
+    ],
+    "shippingAddress": {
+      "fullName": "John Doe",
+      "phone": "+1234567890",
+      "line1": "123 Main St"
+    },
+    "paymentMethod": "cod",
+    "subtotal": 100,
+    "discountTotal": 0,
+    "shippingTotal": 0,
+    "taxTotal": 0,
+    "grandTotal": 100,
+    "createdAt": { "$date": "2026-06-19T12:00:00.000Z" }
+  }
+]

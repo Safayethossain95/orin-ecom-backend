@@ -3,15 +3,24 @@ const ORDER_STATUS = require("../../constants/order-status");
 
 const orderItemSchema = new mongoose.Schema(
   {
-    product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
     name: { type: String, required: true },
     sku: { type: String, required: true },
     image: String,
-    seller: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    externalProductId: String,
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, min: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const shippingAddressSchema = new mongoose.Schema(
@@ -25,7 +34,7 @@ const shippingAddressSchema = new mongoose.Schema(
     postalCode: { type: String, required: true },
     country: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const orderSchema = new mongoose.Schema(
@@ -57,7 +66,7 @@ const orderSchema = new mongoose.Schema(
     paidAt: Date,
     deliveredAt: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 orderSchema.index({ user: 1, createdAt: -1 });

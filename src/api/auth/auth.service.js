@@ -13,7 +13,8 @@ const createTokenResponse = (user) => ({
 });
 
 const register = async (payload) => {
-  const user = await User.create(payload);
+  const { name, email, password, phone } = payload;
+  const user = await User.create({ name, email, password, phone });
   return createTokenResponse(user);
 };
 
