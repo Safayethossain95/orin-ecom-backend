@@ -12,11 +12,12 @@ const orderController = require("../api/orders/order.controller");
 const { createOrderSchema } = require("../api/orders/order.validation");
 const validate = require("../middleware/validate");
 const protect = require("../middleware/auth");
+const sendResponse = require("../utils/send-response");
 
 const router = express.Router();
 
 router.get("/health", (_req, res) => {
-  res.status(200).json({ success: true, message: "API is healthy." });
+  sendResponse(res, 200, "API is healthy.");
 });
 
 // Legacy /create-order endpoint expected by some clients
