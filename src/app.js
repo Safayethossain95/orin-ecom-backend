@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -12,7 +13,6 @@ const notFound = require("./middleware/not-found");
 const sanitize = require("./middleware/sanitize");
 const apiRoutes = require("./routes");
 const sendResponse = require("./utils/send-response");
-
 const app = express();
 
 app.set("trust proxy", 1);
@@ -67,8 +67,25 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.get("/health", (_req, res) => {
-  sendResponse(res, 200, "API is healthy.");
+app.get("/health", async (_req, res) => {
+  try {
+    // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    const dbStatus = mongoose.connection.readyState;
+    
+    if (dbStatus !== 1) {
+      return sendResponse(res, 500, "API is live, but MongoDB is disconnected.", {
+        readyState: dbStatus
+      });
+    }
+
+    return sendResponse(res, 200, "API and MongoDB are healthy.", {
+      readyState: dbStatus
+    });
+  } catch (error) {
+    return sendResponse(res, 500, "Health check failed.", {
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
 });
 
 app.use("/api/v1", apiRoutes);
