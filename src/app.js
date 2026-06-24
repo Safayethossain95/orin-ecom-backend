@@ -14,6 +14,39 @@ const sanitize = require("./middleware/sanitize");
 const apiRoutes = require("./routes");
 const sendResponse = require("./utils/send-response");
 const app = express();
+if (!global.mongooseCache) {
+  global.mongooseCache = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (!process.env.MONGO_URI) {
+    throw new Error("Please define the process.env.MONGO_URI environment variable inside your Vercel settings.");
+  }
+
+  // If a connection already exists, reuse it
+  if (global.mongooseCache.conn) {
+    return global.mongooseCache.conn;
+  }
+
+  // If a connection attempt is in progress, wait for it
+  if (!global.mongooseCache.promise) {
+    const opts = {
+      bufferCommands: false, // Prevents hanging requests if the DB connection drops
+    };
+
+    global.mongooseCache.promise = mongoose.connect(process.env.MONGO_URI, opts).then((m) => m);
+  }
+
+  try {
+    global.mongooseCache.conn = await global.mongooseCache.promise;
+  } catch (e) {
+    global.mongooseCache.promise = null; // Reset promise on failure so it retries next time
+    throw e;
+  }
+
+  return global.mongooseCache.conn;
+}
+
 
 app.set("trust proxy", 1);
 
@@ -67,20 +100,19 @@ app.get("/", (_req, res) => {
   });
 });
 
+// 2. Your Health Check Route
 app.get("/health", async (_req, res) => {
   try {
-    // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    // Force a connection check/attempt before inspecting readyState
+    await connectToDatabase();
+    
     const dbStatus = mongoose.connection.readyState;
     
     if (dbStatus !== 1) {
-      return sendResponse(res, 500, "API is live, but MongoDB is disconnected.", {
-        readyState: dbStatus
-      });
+      return sendResponse(res, 500, "API is live, but MongoDB is disconnected.", { readyState: dbStatus });
     }
 
-    return sendResponse(res, 200, "API and MongoDB are healthy.", {
-      readyState: dbStatus
-    });
+    return sendResponse(res, 200, "API and MongoDB are healthy.", { readyState: dbStatus });
   } catch (error) {
     return sendResponse(res, 500, "Health check failed.", {
       error: error instanceof Error ? error.message : String(error)
