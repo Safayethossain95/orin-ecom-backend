@@ -2,23 +2,28 @@ const env = require("../../config/env");
 const asyncHandler = require("../../utils/async-handler");
 const sendResponse = require("../../utils/send-response");
 const authService = require("./auth.service");
+const connectToDatabase = require("../../database/mongoose");
 
 const setTokenCookie = (res, token) => {
   res.cookie("accessToken", token, {
     httpOnly: true,
     secure: env.env === "production",
     sameSite: "strict",
-    expires: new Date(Date.now() + env.jwtCookieExpiresInDays * 24 * 60 * 60 * 1000),
+    expires: new Date(
+      Date.now() + env.jwtCookieExpiresInDays * 24 * 60 * 60 * 1000,
+    ),
   });
 };
 
 const register = asyncHandler(async (req, res) => {
+  await connectToDatabase();
   const result = await authService.register(req.body);
   setTokenCookie(res, result.token);
   sendResponse(res, 201, "Registration successful.", result);
 });
 
 const login = asyncHandler(async (req, res) => {
+  await connectToDatabase();
   const result = await authService.login(req.body);
   setTokenCookie(res, result.token);
   sendResponse(res, 200, "Login successful.", result);
