@@ -2,6 +2,7 @@ const User = require("../api/users/user.model");
 const AppError = require("../utils/app-error");
 const asyncHandler = require("../utils/async-handler");
 const { verifyToken } = require("../utils/jwt");
+const connectToDatabase = require("../database/mongoose");
 
 const getBearerToken = (req) => {
   const header = req.headers.authorization;
@@ -14,6 +15,7 @@ const getBearerToken = (req) => {
 };
 
 const protect = asyncHandler(async (req, _res, next) => {
+  await connectToDatabase();
   const token = getBearerToken(req);
 
   if (!token) {
